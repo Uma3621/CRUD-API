@@ -1,20 +1,58 @@
 package main
 
 import (
-	"example.com/crud-api/config"
+	"encoding/json"
+	"fmt"
+	"log"
+	"os"
+
+	"example.com/crud-api/Configurations"
 	"example.com/crud-api/handlers"
 	"github.com/gin-gonic/gin"
 )
 
+// loading the config file
+var config Configurations.Config
+
+func LoadConfig(filePath string) error {
+	file, err := os.Open(filePath)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	decoder := json.NewDecoder(file)
+	err = decoder.Decode(&config)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func main() {
-	config.ConnectDatabase()
+	err := LoadConfig("config.json") // Load the config file
+	if err != nil {
+		log.Fatalf("Error loading config: %v", err)
+	}
+	// Connect to the database using config values
+	Configurations.ConnectDatabase(config)
 	router := gin.Default()
 
-	router.POST("/user", handlers.CreateUser)
-	router.GET("/users", handlers.GetUsers)
-	router.PUT("/users/:id", handlers.UpdateUser)
-	router.DELETE("/users/:id", handlers.DeleteUser)
-	router.Run(":8080")
+	router.POST("/user", func(c *gin.Context) {
+		handlers.CreateUser(c, config) // Pass the required `*gin.Context` and `config`.
+	})
+	router.GET("/users", func(c *gin.Context) {
+		handlers.GetUsers(c, config) // Pass the required `*gin.Context` and `config`.
+	})
+	router.PUT("/users/:id", func(c *gin.Context) {
+		handlers.UpdateUser(c, config) // Pass the required `*gin.Context` and `config`.
+	})
+	router.DELETE("/users/:id", func(c *gin.Context) {
+		handlers.DeleteUser(c, config) // Pass the required `*gin.Context` and `config`.
+	})
+	// Start the server using the port from the config
+	ServerAddress := fmt.Sprintf(":%d", config.Server.Port)
+	router.Run(ServerAddress)
 }
 
 /*type LoginRequest struct {

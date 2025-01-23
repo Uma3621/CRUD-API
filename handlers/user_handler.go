@@ -2,10 +2,11 @@ package handlers
 
 import (
 	"context"
+	"log"
 	"net/http"
 	"time"
 
-	"example.com/crud-api/config"
+	"example.com/crud-api/Configurations"
 	"example.com/crud-api/models"
 
 	"github.com/gin-gonic/gin"
@@ -13,8 +14,10 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
+//var config Configurations.Config
+
 // CreateUser handles creating a new user.
-func CreateUser(c *gin.Context) {
+func CreateUser(c *gin.Context, config Configurations.Config) {
 	var user models.User
 
 	// Binds the JSON body to the `user` struct.
@@ -24,7 +27,7 @@ func CreateUser(c *gin.Context) {
 	}
 
 	// Access the "users" collection in MongoDB.
-	collection := config.GetCollection("users")
+	collection := Configurations.GetCollection(config.Database.Name, "users")
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
@@ -40,13 +43,14 @@ func CreateUser(c *gin.Context) {
 }
 
 // GetUsers retrieves all users.
-func GetUsers(c *gin.Context) {
-	collection := config.GetCollection("users")
+func GetUsers(c *gin.Context, config Configurations.Config) {
+	collection := Configurations.GetCollection(config.Database.Name, "users")
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
 	cursor, err := collection.Find(ctx, bson.M{}) // Fetch all documents using an empty filter.
 	if err != nil {
+		log.Printf("Error fetching users from DB: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch users"})
 		return
 	}
@@ -62,7 +66,7 @@ func GetUsers(c *gin.Context) {
 }
 
 // UpdateUser updates a user by ID.
-func UpdateUser(c *gin.Context) {
+func UpdateUser(c *gin.Context, config Configurations.Config) {
 	id := c.Param("id") // Retrieves the user ID from the URL path parameter.
 	var user models.User
 
@@ -72,7 +76,7 @@ func UpdateUser(c *gin.Context) {
 	}
 
 	objectID, _ := primitive.ObjectIDFromHex(id) // Converts the ID string to MongoDB's ObjectID type.
-	collection := config.GetCollection("users")
+	collection := Configurations.GetCollection(config.Database.Name, "users")
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
@@ -86,10 +90,10 @@ func UpdateUser(c *gin.Context) {
 }
 
 // DeleteUser deletes a user by ID.
-func DeleteUser(c *gin.Context) {
+func DeleteUser(c *gin.Context, config Configurations.Config) {
 	id := c.Param("id")
 	objectID, _ := primitive.ObjectIDFromHex(id)
-	collection := config.GetCollection("users")
+	collection := Configurations.GetCollection(config.Database.Name, "users")
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 

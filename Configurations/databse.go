@@ -1,7 +1,8 @@
-package config
+package Configurations
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"time"
 
@@ -11,9 +12,15 @@ import (
 
 var DB *mongo.Client
 
-func ConnectDatabase() {
-
-	clientOptions := options.Client().ApplyURI("mongodb://localhost:27017")
+func ConnectDatabase(config Config) {
+	uri := fmt.Sprintf("mongodb://%s:%d/%s",
+		//config.Database.User,
+		//config.Database.Password,
+		config.Database.Host,
+		config.Database.Port,
+		config.Database.Name,
+	)
+	clientOptions := options.Client().ApplyURI(uri)
 
 	// Sets a timeout of 10 seconds for the connection process.
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
@@ -35,6 +42,6 @@ func ConnectDatabase() {
 }
 
 // retrieves a collection from userdb databse
-func GetCollection(collectionName string) *mongo.Collection {
-	return DB.Database("usersdb").Collection(collectionName)
+func GetCollection(databaseName string, collectionName string) *mongo.Collection {
+	return DB.Database(databaseName).Collection(collectionName)
 }
