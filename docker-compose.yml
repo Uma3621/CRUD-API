@@ -1,0 +1,37 @@
+# 🔹 Why Do We Need This File?
+# The docker-compose.yml file allows you to run multiple containers together with a single command (docker-compose up).
+
+# Since your project has two services (Go app & MongoDB), using Docker Compose:
+# ✅ Helps define & manage both containers easily.
+# ✅ Automatically links the Go app and MongoDB.
+# ✅ Simplifies setup—no need to start containers manually.
+
+
+version: "3.8"  # Docker Compose version
+
+services:
+  app:
+    build: .  # Builds the Go app using Dockerfile
+    ports:
+      - "8080:8080"  # Maps port 8080 (container) to 8080 (host)
+    depends_on:
+      - mongo  # Ensures MongoDB starts before the app
+    environment:
+      MONGO_URI: "mongodb://mongo:27017/mydatabase"  # DB connection
+
+  mongo:
+    image: mongo:6.0  # Uses the official MongoDB image
+    container_name: mongodb  # Names the MongoDB container
+    restart: always  # Restarts the container if it stops
+    ports:
+      - "27018:27017"  # Maps MongoDB port  # Exposes 27017 as 27018 on localhost
+    volumes:
+      - mongo_data:/data/db  # Persists MongoDB data
+
+volumes:
+  mongo_data:  # Defines a persistent volume for MongoDB
+
+
+# Go App Location   	MongoDB Connection String
+# Running Locally    	mongodb://localhost:27018
+# Running in Docker    	mongodb://mongo:27017

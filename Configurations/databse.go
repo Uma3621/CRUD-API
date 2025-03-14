@@ -20,6 +20,7 @@ func ConnectDatabase(config Config) {
 		config.Database.Port,
 		config.Database.Name,
 	)
+	//clientOptions := options.Client().ApplyURI(uri)
 	clientOptions := options.Client().ApplyURI(uri)
 
 	// Sets a timeout of 10 seconds for the connection process.

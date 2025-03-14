@@ -5,7 +5,7 @@
       "port": 8080
     },
     "database": {
-      "host": "localhost",
+      "host": "mongodb",
       "port": 27017,
       "name": "usersdb",
       "user": "admin",

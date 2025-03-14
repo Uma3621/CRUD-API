@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -18,6 +19,7 @@ import (
 
 // CreateUser handles creating a new user.
 func CreateUser(c *gin.Context, config Configurations.Config) {
+	fmt.Println("CreateUser handler triggered")
 	var user models.User
 
 	// Binds the JSON body to the `user` struct.
@@ -42,7 +44,7 @@ func CreateUser(c *gin.Context, config Configurations.Config) {
 	c.JSON(http.StatusCreated, gin.H{"id": result.InsertedID})
 }
 
-// GetUsers retrieves all users.
+// GetUsers retrieves all users
 func GetUsers(c *gin.Context, config Configurations.Config) {
 	collection := Configurations.GetCollection(config.Database.Name, "users")
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
@@ -105,3 +107,5 @@ func DeleteUser(c *gin.Context, config Configurations.Config) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "User deleted successfully"})
 }
+
+	

@@ -30,12 +30,15 @@ func LoadConfig(filePath string) error {
 }
 
 func main() {
+	fmt.Println("Setting up routes...")
+
 	err := LoadConfig("config.json") // Load the config file
 	if err != nil {
 		log.Fatalf("Error loading config: %v", err)
 	}
 	// Connect to the database using config values
 	Configurations.ConnectDatabase(config)
+
 	router := gin.Default()
 
 	router.POST("/user", func(c *gin.Context) {
@@ -52,6 +55,7 @@ func main() {
 	})
 	// Start the server using the port from the config
 	ServerAddress := fmt.Sprintf(":%d", config.Server.Port)
+
 	router.Run(ServerAddress)
 }
 

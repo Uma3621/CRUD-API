@@ -1,12 +1,14 @@
 package models
 
-import "go.mongodb.org/mongo-driver/bson/primitive"
+import (
+	"go.mongodb.org/mongo-driver/bson/primitive"
+)
 
-// type Address struct {
-// 	State   string `json:"state" bson:"state"`
-// 	City    string `json:"city" bson:"city"`
-// 	Pincode int    `json:"pincode" bson:"picode"`
-// }
+//	type Address struct {
+//		State   string `json:"state" bson:"state"`
+//		City    string `json:"city" bson:"city"`
+//		Pincode int    `json:"pincode" bson:"picode"`
+//	}
 type User struct {
 	ID    primitive.ObjectID `json:"id,omitempty" bson:"_id,omitempty"`
 	Name  string             `json:"name" bson:"user_name"`
